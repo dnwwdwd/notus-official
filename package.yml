@@ -1,0 +1,22 @@
+package: cloud.lazycat.app.notus-website
+version: 0.1.0
+name: Notus 官网
+description: Notus 官方网站
+author: dnwwdwd
+license: Apache-2.0
+homepage: https://github.com/dnwwdwd/Notus
+min_os_version: "1.5.0"
+
+locales:
+  zh:
+    name: "Notus 官网"
+    description: "Notus 官方网站"
+  zh_CN:
+    name: "Notus 官网"
+    description: "Notus 官方网站"
+  en:
+    name: "Notus Website"
+    description: "Official website for Notus"
+  ja:
+    name: "Notus 公式サイト"
+    description: "Notus の公式ウェブサイト"

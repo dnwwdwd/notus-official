@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8"/>
+    <link rel="icon" type="image/png" href="/logo.png"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Notus — 私有化 AI 写作伙伴</title>
+    <meta name="description" content="Notus 是一款运行在本地桌面上的私有化知识库与 AI 写作协作工具。笔记、向量索引全部存储在本地，无云依赖。"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap" rel="stylesheet"/>
+    <style>
+      :root {
+        --font-ui: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-editor: 'Noto Serif SC', 'Cormorant Garamond', Georgia, serif;
+        --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+      }
+      html, body { margin: 0; padding: 0; }
+      body { font-family: var(--font-ui); }
+      ::selection { background: #C15F3C; color: #fff; }
+      a { color: inherit; }
+      * { box-sizing: border-box; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

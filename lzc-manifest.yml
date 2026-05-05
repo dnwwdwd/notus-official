@@ -1,0 +1,13 @@
+application:
+  subdomain: notus-website
+  background_task: false
+  routes:
+    - /=http://main.cloud.lazycat.app.notus-website.lzcapp:80
+
+services:
+  main:
+    image: registry.lazycat.cloud/u30387910/library/nginx:3c51321d7a0905c3
+    setup_script: |
+      rm -rf /usr/share/nginx/html/*
+      cp -R /lzcapp/pkg/content/site/. /usr/share/nginx/html/
+      cp /lzcapp/pkg/content/nginx/default.conf /etc/nginx/conf.d/default.conf

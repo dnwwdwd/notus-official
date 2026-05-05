@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<title>Notus — 官网</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --font-ui: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-editor: 'Noto Serif SC', 'Cormorant Garamond', Georgia, serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: var(--font-ui); }
+  ::selection { background: #C15F3C; color: #fff; }
+  a { color: inherit; }
+  * { box-sizing: border-box; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel">
+// Inline NotusLogo (independent of icons.jsx which references things not loaded here)
+const NotusLogo = ({ size = 28, color = '#C15F3C' }) => (
+  <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+    <path d="M6 26 L6 6 L10 6 L22 22 L22 6 L26 6 L26 26 L22 26 L10 10 L10 26 Z" fill={color}/>
+    <circle cx="26" cy="6" r="2.5" fill={color} opacity="0.6"/>
+  </svg>
+);
+window.NotusLogo = NotusLogo;
+</script>
+
+<script type="text/babel" src="site-shared.jsx"></script>
+<script type="text/babel" src="site-v1.jsx"></script>
+<script type="text/babel" src="site-v2.jsx"></script>
+
+<script type="text/babel">
+const TWEAK_DEFAULS = /*EDITMODE-BEGIN*/{
+  "variant": "v1",
+  "imgHero": "",
+  "imgFeature1": "",
+  "imgFeature2": "",
+  "imgFeature3": ""
+}/*EDITMODE-END*/;
+
+// Wire image slots into a window-level dict that site-v1 reads via useImageSlot.
+const IMAGE_SLOTS = [
+  { key: 'hero',     tweakKey: 'imgHero',     label: 'Hero · AI diff 演示',  hint: '右侧主视觉（默认是动画演示）' },
+  { key: 'feature1', tweakKey: 'imgFeature1', label: '01 · 编辑器',           hint: 'Editor 截图' },
+  { key: 'feature2', tweakKey: 'imgFeature2', label: '02 · 知识库',           hint: 'Knowledge / RAG 截图' },
+  { key: 'feature3', tweakKey: 'imgFeature3', label: '03 · 创作画布',         hint: 'Canvas + diff 截图' },
+];
+
+const App = () => {
+  const [tweaksOpen, setTweaksOpen] = React.useState(false);
+  const [state, setStateRaw] = React.useState(TWEAK_DEFAULS);
+  const setState = (partial) => {
+    const next = { ...state, ...partial };
+    setStateRaw(next);
+    // Sync image slots to a window dict the V1 components read.
+    window.__v1Images = {
+      hero: next.imgHero || null,
+      feature1: next.imgFeature1 || null,
+      feature2: next.imgFeature2 || null,
+      feature3: next.imgFeature3 || null,
+    };
+    window.postMessage({ type: '__v1_images_changed' }, '*');
+    // Persist non-image keys; large data: URLs would bloat the file, so skip those.
+    const persistable = {};
+    for (const k of Object.keys(partial)) {
+      const v = partial[k];
+      if (typeof v === 'string' && v.startsWith('data:')) continue;
+      persistable[k] = v;
+    }
+    if (Object.keys(persistable).length) {
+      window.parent.postMessage({ type: '__edit_mode_set_keys', edits: persistable }, '*');
+    }
+  };
+
+  // Initial sync.
+  React.useEffect(() => {
+    window.__v1Images = {
+      hero: state.imgHero || null,
+      feature1: state.imgFeature1 || null,
+      feature2: state.imgFeature2 || null,
+      feature3: state.imgFeature3 || null,
+    };
+    window.postMessage({ type: '__v1_images_changed' }, '*');
+  }, []);
+
+  const onPickImage = (tweakKey) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = () => {
+      const f = input.files?.[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = () => setState({ [tweakKey]: r.result });
+      r.readAsDataURL(f);
+    };
+    input.click();
+  };
+
+  React.useEffect(() => {
+    const h = (e) => {
+      if (e.data?.type === '__activate_edit_mode') setTweaksOpen(true);
+      if (e.data?.type === '__deactivate_edit_mode') setTweaksOpen(false);
+    };
+    window.addEventListener('message', h);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', h);
+  }, []);
+
+  const Variant = state.variant === 'v2' ? window.V2 : window.V1;
+
+  return (
+    <>
+      <Variant key={state.variant}/>
+      {tweaksOpen && (
+        <div style={{
+          position: 'fixed', bottom: 16, right: 16, width: 280, zIndex: 1000,
+          background: '#FFFDF7', border: '1px solid #D8D4CB', borderRadius: 8,
+          boxShadow: '0 20px 50px rgba(0,0,0,0.18)', padding: 16,
+          fontFamily: 'var(--font-ui)', color: '#1A1311',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 14 }}>
+            <span style={{ fontSize: 14, fontWeight: 600 }}>Tweaks</span>
+            <div style={{ flex: 1 }}/>
+            <button onClick={() => {
+              setTweaksOpen(false);
+              window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+            }} style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: 16, color: '#6B6158', padding: 0,
+            }}>✕</button>
+          </div>
+          <div style={{ fontSize: 11, color: '#9C9489', textTransform: 'uppercase',
+            letterSpacing: 0.8, marginBottom: 8 }}>设计方向</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            {[
+              { k: 'v1', label: 'Atelier Dark', sub: '暖色深色 · 工作室' },
+              { k: 'v2', label: 'Letterpress', sub: '奶油浅色 · 编辑部' },
+            ].map(o => {
+              const on = state.variant === o.k;
+              return (
+                <button key={o.k} onClick={() => setState({ variant: o.k })} style={{
+                  textAlign: 'left', padding: 10, cursor: 'pointer',
+                  border: on ? '2px solid #C15F3C' : '1px solid #D8D4CB',
+                  background: on ? '#FBEEE8' : '#fff', borderRadius: 6,
+                  fontFamily: 'var(--font-editor)',
+                }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1311' }}>{o.label}</div>
+                  <div style={{ fontSize: 11, color: '#6B6158', marginTop: 2 }}>{o.sub}</div>
+                </button>
+              );
+            })}
+          </div>
+          <div style={{ fontSize: 11, color: '#6B6158', marginTop: 14, lineHeight: 1.55 }}>
+            两个差异较大的官网方向。V1 走深色匠人质感（Hero 是实时 AI diff 演示）；V2 走奶油浅色编辑部排版（衬线 + 大留白）。
+          </div>
+
+          {state.variant === 'v1' && (
+            <>
+              <div style={{ height: 1, background: '#E8E5DE', margin: '16px 0 14px' }}/>
+              <div style={{ fontSize: 11, color: '#9C9489', textTransform: 'uppercase',
+                letterSpacing: 0.8, marginBottom: 8 }}>替换图片（V1）</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {IMAGE_SLOTS.map(slot => {
+                  const cur = state[slot.tweakKey];
+                  return (
+                    <div key={slot.key} style={{
+                      border: '1px solid #E8E5DE', borderRadius: 6, padding: 8,
+                      display: 'flex', alignItems: 'center', gap: 8, background: '#fff',
+                    }}>
+                      <div style={{
+                        width: 40, height: 28, borderRadius: 3, background: '#F0EDE6',
+                        backgroundImage: cur ? `url(${cur})` : 'none',
+                        backgroundSize: 'cover', backgroundPosition: 'center',
+                        flexShrink: 0, border: '1px solid #D8D4CB',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 14, color: '#9C9489',
+                      }}>{cur ? '' : '🖼'}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: '#1A1311',
+                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {slot.label}
+                        </div>
+                        <div style={{ fontSize: 10, color: '#9C9489',
+                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {cur ? '已替换 · 点击更换' : slot.hint}
+                        </div>
+                      </div>
+                      <button onClick={() => onPickImage(slot.tweakKey)} style={{
+                        fontSize: 11, padding: '4px 8px', borderRadius: 4,
+                        border: '1px solid #D8D4CB', background: '#fff', cursor: 'pointer',
+                        color: '#1A1311',
+                      }}>{cur ? '换' : '上传'}</button>
+                      {cur && (
+                        <button onClick={() => setState({ [slot.tweakKey]: '' })} style={{
+                          fontSize: 11, padding: '4px 8px', borderRadius: 4,
+                          border: '1px solid #D8D4CB', background: '#fff', cursor: 'pointer',
+                          color: '#6B6158',
+                        }}>×</button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              <div style={{ fontSize: 10, color: '#9C9489', marginTop: 10, lineHeight: 1.5 }}>
+                上传后图片以 base64 嵌入页面 · 刷新后保留 · 不会写入磁盘。如需永久替换，把图片放到项目目录并在源文件中改路径。
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
