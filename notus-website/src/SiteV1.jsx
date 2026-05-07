@@ -233,10 +233,10 @@ const CapStrip = () => (
     borderTop: `1px solid ${C.lineSub}`, borderBottom: `1px solid ${C.lineSub}` }}>
     <div className="cap-grid">
       {[
-        { n: '块级', l: '只改你指的那段，别处一字不碰' },
-        { n: '精准', l: '语义 + 关键词两路搜，换种说法也找得到' },
-        { n: '私有', l: '数据全存本地，不传云、不共享' },
-        { n: '风格', l: '从你旧文里学，写出来像你自己' },
+        { n: '精准', l: '只改你选的段落，其余不碰' },
+        { n: '好找', l: '换个说法也能搜到' },
+        { n: '私有', l: '数据不离开你的电脑' },
+        { n: '像你', l: '学你的写法，不像 AI' },
       ].map((x, i) => (
         <div key={i}>
           <div style={{ fontFamily: 'var(--font-editor)', fontSize: 36, fontWeight: 700,
@@ -301,15 +301,15 @@ const FlowSection = () => {
         <h2 className="feature-h2" style={{ fontFamily: 'var(--font-editor)', fontSize: 44, fontWeight: 700,
           color: C.text, lineHeight: 1.15, margin: 0, letterSpacing: -1, maxWidth: 720, marginInline: 'auto' }}>
           四步，
-          <span style={{ color: C.accent, fontStyle: 'italic', fontWeight: 500 }}>从素材到成文</span>
+          <span style={{ color: C.accent, fontStyle: 'italic', fontWeight: 500 }}>完成一篇文章</span>
         </h2>
       </div>
       <div className="flow-grid">
         {[
-          { n: '01', t: '导入', d: '拖进来就行。文件夹、ZIP 都行，索引自动在本地建好。' },
-          { n: '02', t: '检索', d: '问它问题，它只从你的笔记里找答案。没有就说没有。' },
-          { n: '03', t: '协作', d: '选段落、下指令、看 diff、确认。四步改完一段。' },
-          { n: '04', t: '落盘', d: '改动立刻存到本地 .md 文件。你的文件就是唯一真相。' },
+          { n: '01', t: '导入', d: '笔记拖进来就行。' },
+          { n: '02', t: '提问', d: '从你的笔记里找答案。' },
+          { n: '03', t: '改稿', d: 'AI 改写，你来确认。' },
+          { n: '04', t: '保存', d: '改动存在你电脑上。' },
         ].map((x, i, a) => (
           <div key={i} style={{
             padding: isMobile ? '20px 0' : '0 24px',
@@ -347,32 +347,40 @@ const DownloadSection = () => {
           </div>
           <h2 className="feature-h2" style={{ fontFamily: 'var(--font-editor)', fontSize: 40, fontWeight: 700,
             color: C.text, lineHeight: 1.2, margin: '0 0 20px', letterSpacing: -0.5 }}>
-            下载即用，<br/>
-            <span style={{ color: C.accent, fontStyle: 'italic', fontWeight: 500 }}>数据留在你的硬盘。</span>
+            下载即用。<br/>
+            <span style={{ color: C.accent, fontStyle: 'italic', fontWeight: 500 }}>数据只在你电脑上。</span>
           </h2>
           <p style={{ fontSize: 15, color: C.text2, lineHeight: 1.7, margin: '0 0 32px', maxWidth: 520 }}>
-            笔记、索引、API Key 全在本机。没有账号、没有云同步、没有后门。
+            不注册，不登录，不上传。
           </p>
           <div className="download-buttons" style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <a href={primary.url} style={{
-              background: C.accent, color: '#1A1311', padding: '14px 24px',
+              background: C.accent, color: '#1A1311', padding: '14px 28px',
               borderRadius: 6, fontSize: 14, fontWeight: 600, textDecoration: 'none',
-              display: 'inline-flex', alignItems: 'center', gap: 8,
+              display: 'inline-flex', alignItems: 'center', gap: 10,
             }}>
-              <span>↓</span> 下载 {primary.label}
-              <span style={{ fontSize: 11, opacity: 0.7 }}>({primary.size})</span>
+              {platform !== 'windows' ? (
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M12.15 8.48c-.02-1.95 1.6-2.9 1.67-2.94-.91-1.33-2.33-1.51-2.83-1.53-1.2-.12-2.36.71-2.97.71-.62 0-1.57-.7-2.58-.68-1.33.02-2.55.77-3.24 1.96-1.38 2.4-.35 5.94.99 7.89.66.95 1.44 2.02 2.47 1.98 1-.04 1.37-.64 2.57-.64 1.2 0 1.54.64 2.58.62 1.07-.02 1.74-.97 2.39-1.92.75-1.1 1.06-2.16 1.08-2.22-.02-.01-2.08-.8-2.1-3.16zM10.2 2.72c.54-.66.91-1.58.81-2.5-.78.03-1.73.52-2.29 1.18-.5.58-.94 1.51-.82 2.4.87.07 1.76-.44 2.3-1.08z"/></svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2.3l6.5-.9v6.3H0V2.3zm7.3-1L16 .1v7.6H7.3V1.3zM16 8.5v7.4l-8.7-1.2V8.5H16zM6.5 14.6L0 13.7V8.5h6.5v6.1z"/></svg>
+              )}
+              下载 {primary.label}
             </a>
             <a href={secondary.url} style={{
-              border: `1px solid ${C.line}`, color: C.text, padding: '14px 24px',
+              border: `1px solid ${C.line}`, color: C.text, padding: '14px 28px',
               borderRadius: 6, fontSize: 14, fontWeight: 500, textDecoration: 'none',
-              display: 'inline-flex', alignItems: 'center', gap: 8,
+              display: 'inline-flex', alignItems: 'center', gap: 10,
             }}>
-              <span>↓</span> {secondary.label}
-              <span style={{ fontSize: 11, opacity: 0.6 }}>({secondary.size})</span>
+              {platform === 'windows' ? (
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M12.15 8.48c-.02-1.95 1.6-2.9 1.67-2.94-.91-1.33-2.33-1.51-2.83-1.53-1.2-.12-2.36.71-2.97.71-.62 0-1.57-.7-2.58-.68-1.33.02-2.55.77-3.24 1.96-1.38 2.4-.35 5.94.99 7.89.66.95 1.44 2.02 2.47 1.98 1-.04 1.37-.64 2.57-.64 1.2 0 1.54.64 2.58.62 1.07-.02 1.74-.97 2.39-1.92.75-1.1 1.06-2.16 1.08-2.22-.02-.01-2.08-.8-2.1-3.16zM10.2 2.72c.54-.66.91-1.58.81-2.5-.78.03-1.73.52-2.29 1.18-.5.58-.94 1.51-.82 2.4.87.07 1.76-.44 2.3-1.08z"/></svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2.3l6.5-.9v6.3H0V2.3zm7.3-1L16 .1v7.6H7.3V1.3zM16 8.5v7.4l-8.7-1.2V8.5H16zM6.5 14.6L0 13.7V8.5h6.5v6.1z"/></svg>
+              )}
+              {secondary.label}
             </a>
           </div>
           <p style={{ fontSize: 12, color: C.text3, marginTop: 20, margin: '20px 0 0' }}>
-            当前支持 macOS (Apple Silicon) 和 Windows。
+            目前支持 macOS (Apple Silicon) 和 Windows
           </p>
         </div>
       </div>
@@ -479,7 +487,7 @@ const Footer = () => (
             </span>
           </div>
           <p style={{ fontSize: 13, color: C.text2, lineHeight: 1.7, maxWidth: 320, margin: 0 }}>
-            本地知识库 + AI 写作工具。<br/>
+            你的写作工具，装在你自己电脑上。<br/>
             你的笔记，你的风格，你的硬盘。
           </p>
         </div>
@@ -596,16 +604,16 @@ const SiteV1 = () => {
               fontFamily: 'var(--font-mono)', marginBottom: 28, letterSpacing: 0.5 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: C.accent,
                 animation: 'pulse 1.5s infinite' }}/>
-              离线运行 · 数据全在你手里
+              本地运行 · 数据全在你手里
             </div>
             <h1 className="hero-h1" style={{ fontFamily: 'var(--font-editor)', fontSize: 80, fontWeight: 700,
               color: C.text, lineHeight: 1.0, margin: 0, letterSpacing: -2.5 }}>
-              用你写过的东西，<br/>
-              <span style={{ color: C.accent, fontStyle: 'italic', fontWeight: 500 }}>喂给 AI。</span>
+              你写过的，<br/>
+              <span style={{ color: C.accent, fontStyle: 'italic', fontWeight: 500 }}>AI 都记得。</span>
             </h1>
             <p style={{ fontSize: isMobile ? 15 : 18, color: C.text2, lineHeight: 1.65,
               marginTop: 32, marginBottom: 36, maxWidth: 460 }}>
-              本地知识库 + AI 写作工具。把你的笔记变成 AI 能检索的素材库，写新文章时直接调用，风格也能学。
+              Notus 装在你电脑上，读你的笔记、学你的风格、帮你改稿。数据不上传，不需要注册。
             </p>
             <div className="hero-cta" style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
               <a className="btn-accent" href={primaryDownload.url} style={{
@@ -632,12 +640,12 @@ const SiteV1 = () => {
       <FeatureRow
         idx={1}
         id="editor"
-        title={{ tag: 'EDITOR', main: '写完就能搜，', accent: '不用额外操作。' }}
-        body="保存那一刻，自动拆段建索引。你只管写。"
+        title={{ tag: 'EDITOR', main: '原生 Markdown 编辑器。', accent: '' }}
+        body="所见即所得，大纲导航，保存即收录。"
         points={[
-          { k: '所见即所得', v: '直接改正文，不用左右对照。' },
-          { k: '大纲导航', v: '标题树实时跟踪，点一下跳到任何位置。' },
-          { k: '保存即索引', v: '改了就更新，不用手动同步。' },
+          { k: '直接编辑', v: '在文章上直接改。' },
+          { k: '快速跳转', v: '大纲一键定位。' },
+          { k: '实时收录', v: '保存即入库，无需手动。' },
         ]}
         imgSrc="/file.png"
         mini={<MiniNotus variant="editor" dark={true}/>}
@@ -646,12 +654,12 @@ const SiteV1 = () => {
       <FeatureRow
         idx={2}
         id="knowledge"
-        title={{ tag: 'KNOWLEDGE', main: '只用你的笔记回答，', accent: '没有就说没有。' }}
-        body="从你的笔记里找答案，找到就给出处，没找到直接告诉你。"
+        title={{ tag: 'KNOWLEDGE', main: '秒级检索，', accent: '答案来自你的笔记。' }}
+        body="每条回答附带出处，点一下看原文。"
         points={[
-          { k: '不瞎编', v: '置信度不够就拒答，不凑数。' },
-          { k: '来源可查', v: '每条回答带出处，点一下看原文。' },
-          { k: '双路召回', v: '语义 + 全文，换种表述也不漏。' },
+          { k: '毫秒响应', v: '上万篇笔记也不卡。' },
+          { k: '有出处', v: '每条回答可溯源。' },
+          { k: '搜得准', v: '换种说法也能找到。' },
         ]}
         imgSrc="/knowledge_base.png"
         mini={<MiniNotus variant="knowledge" dark={true}/>}
@@ -661,12 +669,12 @@ const SiteV1 = () => {
       <FeatureRow
         idx={3}
         id="canvas"
-        title={{ tag: 'CANVAS', main: '你说改哪段就改哪段，', accent: '确认了才动笔。' }}
-        body="选中段落交给 AI，看完 diff 再决定要不要。"
+        title={{ tag: 'CANVAS', main: '指哪改哪，', accent: '改前先过目。' }}
+        body="AI 给出修改建议，逐行对比，一键应用。"
         points={[
-          { k: '块级改写', v: '只动选中段落，其余不碰。' },
-          { k: '先看后用', v: '红删绿增一目了然，确认后才写入。' },
-          { k: '学你风格', v: '自动匹配你以前的写法，越用越像你。' },
+          { k: '只改选中', v: '其余内容不碰。' },
+          { k: '先看再用', v: '改了什么一目了然。' },
+          { k: '学你风格', v: '越用越像你。' },
         ]}
         imgSrc="/canvas.png"
         mini={<MiniNotus variant="canvas-diff" dark={true}/>}
